@@ -30,17 +30,20 @@ public class MoviesControl implements MoviesController{
 	SearchRepository searchRepo;
 	SearchMovieRepo searchMovRepo;
 	WishlistRepository wishRepo;
-	
+	MovieAdvancedRepository detailsMovRepo;
+	RatingsRepository ratingRepo;
 	
 	@Autowired
 	public MoviesControl(MovieRepository movRepo, UserRepository userRepo, SearchRepository searchRepo,
-			SearchMovieRepo searchMovRepo, WishlistRepository wishRepo) {
-		super();
+			SearchMovieRepo searchMovRepo, WishlistRepository wishRepo, MovieAdvancedRepository detailsMovRepo,
+			RatingsRepository ratingRepo) {
 		this.movRepo = movRepo;
 		this.userRepo = userRepo;
 		this.searchRepo = searchRepo;
 		this.searchMovRepo = searchMovRepo;
 		this.wishRepo = wishRepo;
+		this.detailsMovRepo = detailsMovRepo;
+		this.ratingRepo = ratingRepo;
 	}
 
 	@Override
@@ -50,10 +53,9 @@ public class MoviesControl implements MoviesController{
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 		String url = baseurl+PATTERN+name;
 		ResponseEntity<OmdbRequest> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, OmdbRequest.class);
-		System.out.println(response);
 		return response.getBody();
-	}
-	
+	}	
+
 	@Override
 	public List<Movie> getMovies(OmdbRequest request){
 		List<Movie> res = new ArrayList<>();
@@ -104,6 +106,39 @@ public class MoviesControl implements MoviesController{
 		Wishlist wish = new Wishlist(dateTime, user, movie);
 		wishRepo.save(wish);
 			return new CommonDTO(TRUE, WL_SAVED);
+	}
+	
+	@Override
+	public Movie getMovieByTitle(String name) {
+		Movie movie =  movRepo.findByName(name);
+		if(movie == null){
+			return null;
+		}	
+		return movie;
+	}
+
+
+	@Override
+	public MovieAdvanced getMovieDetailsFromLocal(Movie movie) {
+		return detailsMovRepo.findByMovie(movie);
+	}
+	
+	
+	@Override
+	public MovieDetailsDTO getMovDetailsFromOmdb(String name) {
+		RestTemplate restTemplate  = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+		String url = baseurl+PATTERN2+name;
+		System.out.println(url);
+		ResponseEntity<MovieDetailsDTO> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, MovieDetailsDTO.class);
+		return response.getBody();
+	}
+
+	@Override
+	public void saveMovieDetails(MovieAdvanced result) {
+		detailsMovRepo.save(result);
+		System.out.println(MOV_SAVED);		
 	}
 
 }

@@ -49,6 +49,32 @@ public class RequestsControl {
 		}	
 	}
 	
+	@GetMapping(value = GETDETAILS)
+	public CommonDTO getDetailsFromDb(@RequestParam(name=NAME) String name) {
+		
+		Movie movie = movManager.getMovieByTitle(name);
+		System.out.println(movie);
+		
+		if(movie == null) return new CommonDTO(FALSE, WR_MOVIE);
+		MovieAdvanced localSearch = movManager.getMovieDetailsFromLocal(movie);
+		if(localSearch != null){
+			System.out.println(DETAILS+" "+UP_LOCAL);
+			return new CommonDTO(TRUE, localSearch);
+		}
+		
+		MovieDetailsDTO req = movManager.getMovDetailsFromOmdb(name);		
+		System.out.println(DETAILS+" "+UP_DIST);
+		
+		if(req.getResponse().equals("False")){
+			return new CommonDTO(FALSE, WR_MOVIE);
+		}else{
+			MovieAdvanced dbPortion = new MovieAdvanced(movie, req);
+			movManager.saveMovieDetails(dbPortion);
+			return new CommonDTO(TRUE, req);
+		}	
+
+	}
+	
 	@GetMapping(value = GETWISHES)
 	public CommonDTO getWishesFromDb(@RequestParam(name=NAME) String name) {
 		List<Movie> wishList = movManager.getWishes(name);

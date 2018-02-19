@@ -13,9 +13,7 @@ import javax.validation.constraints.NotNull;
 public class User extends AbstractBaseEntity {
 	@Column(name="identity", nullable = false)
 	@NotNull
-	private String identity;
-	
-	
+	private String identity;	
 
 	public User() {	}
 

@@ -14,6 +14,9 @@ public interface MovieRepository extends CrudRepository<Movie, Integer>{
 		@Query("Select m from Movie m where m.imdbID = :getImdb")
 		public Movie getByImdb(@Param("getImdb") String imdb);
 		@Query("Select m from Movie m "
-				+ " join Wishlist wl on wl.movie = m.id ")
+				+ " join Wishlist wl on wl.movie = m.id "
+				+ " and wl.user = :getUser "
+				+ " order by wl.dateTime desc ")
 		public Iterable<Movie> getWishListByUser(@Param("getUser") User user);
-}
+		public Movie findByName(String title);
+}	

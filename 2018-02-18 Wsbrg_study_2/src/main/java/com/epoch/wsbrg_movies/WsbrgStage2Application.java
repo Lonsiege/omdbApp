@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class WsbrgStudy2Application {
+public class WsbrgStage2Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(WsbrgStudy2Application.class, args);
+		SpringApplication.run(WsbrgStage2Application.class, args);
 	}
 }
